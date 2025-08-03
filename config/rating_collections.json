@@ -1,0 +1,18 @@
+{
+  "rating_collections": {
+    "| evergreen": "Evergreen",
+    "| absolute favorite": "Absolute Favorite",
+    "| favorite": "Favorites",
+    "| good": "Great"
+  },
+  "custom_columns": {
+    "ratings_column": "my_ratings",
+    "genres_column": "my_genres"
+  },
+  "discovered_collections": {
+    "total_collections": 30,
+    "rating_collections": ["| evergreen", "| absolute favorite", "| favorite", "| good"],
+    "genre_collections": ["> band", "> no band", "LSQ", "already read", "dark", "delete", "find series or inspired", "fix", "historic au", "holiday", "killjoys", "kink", "little", "mix", "new jersey", "not frerard", "omegaverse", "other evergreen", "other favorite", "porn", "reunion", "sickfic", "supernatural", "sweet fluff", "| remove"],
+    "system_collections": ["ReadingList"]
+  }
+}
