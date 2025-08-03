@@ -1,11 +1,95 @@
 {
   "search_paths": [
-    "/Users/jenniferparsons/Engineering/Projects/kobo-to-calibre",
-    "."
+    "/Users/jenniferparsons/Books"
   ],
   "discovered_libraries": {
-    "MCR library sample": {
-      "path": "/Users/jenniferparsons/Engineering/Projects/kobo-to-calibre/MCR library sample",
+    "Shousetsu Bang*Bang": {
+      "path": "/Users/jenniferparsons/Books/Shousetsu Bang*Bang",
+      "is_primary": false,
+      "book_count": 1,
+      "custom_columns": {}
+    },
+    "Misc": {
+      "path": "/Users/jenniferparsons/Books/Misc",
+      "is_primary": false,
+      "book_count": 346,
+      "custom_columns": {
+        "ao3rating": "AO3 Rating",
+        "category": "Category",
+        "freeformtags": "AO3 tags",
+        "genre": "Genre",
+        "ships": "Ships",
+        "status": "Status",
+        "word_ount": "Word Count",
+        "fandom": "Fandom",
+        "reading_time": "Reading Time"
+      }
+    },
+    "The Old Guard": {
+      "path": "/Users/jenniferparsons/Books/The Old Guard",
+      "is_primary": false,
+      "book_count": 108,
+      "custom_columns": {
+        "ao3rating": "AO3 Rating",
+        "category": "Category",
+        "fandom": "Fandom",
+        "freeformtags": "AO3 tags",
+        "genre": "Genre",
+        "reading_time": "Reading Time",
+        "ships": "Ships",
+        "status": "Status",
+        "word_ount": "Word Count"
+      }
+    },
+    "Ted Lasso": {
+      "path": "/Users/jenniferparsons/Books/Ted Lasso",
+      "is_primary": false,
+      "book_count": 128,
+      "custom_columns": {
+        "ao3rating": "AO3 Rating",
+        "category": "Category",
+        "freeformtags": "AO3 tags",
+        "genre": "Genre",
+        "ships": "Ships",
+        "status": "Status",
+        "word_ount": "Word Count"
+      }
+    },
+    "HBR": {
+      "path": "/Users/jenniferparsons/Books/HBR",
+      "is_primary": false,
+      "book_count": 12,
+      "custom_columns": {
+        "word_count": "Word count",
+        "reading_time": "Reading Time"
+      }
+    },
+    "Main": {
+      "path": "/Users/jenniferparsons/Books/Main",
+      "is_primary": false,
+      "book_count": 671,
+      "custom_columns": {
+        "word_ount": "Word Count",
+        "category": "Category",
+        "reading_time": "reading_time"
+      }
+    },
+    "Dragon Age": {
+      "path": "/Users/jenniferparsons/Books/Dragon Age",
+      "is_primary": false,
+      "book_count": 713,
+      "custom_columns": {
+        "category": "Category",
+        "word_ount": "Word Count",
+        "status": "Status",
+        "ao3rating": "AO3 Rating",
+        "ships": "Ships",
+        "genre": "Genre",
+        "freeformtags": "AO3 tags"
+      }
+    },
+    "MCR": {
+      "path": "/Users/jenniferparsons/Books/MCR",
       "is_primary": true,
       "book_count": 1720,
       "custom_columns": {
@@ -21,26 +105,8 @@
         "reading_time": "Reading Time",
         "description": "Description"
       }
-    },
-    "Misc library sample": {
-      "path": "/Users/jenniferparsons/Engineering/Projects/kobo-to-calibre/Misc library sample",
-      "is_primary": false,
-      "book_count": 346,
-      "custom_columns": {
-        "ao3rating": "AO3 Rating",
-        "category": "Category",
-        "freeformtags": "AO3 tags",
-        "genre": "Genre",
-        "ships": "Ships",
-        "status": "Status",
-        "word_ount": "Word Count",
-        "fandom": "Fandom",
-        "reading_time": "Reading Time",
-        "myratings": "My Ratings",
-        "my_genres": "My Genres"
-      }
     }
   },
-  "primary_library": "MCR library sample",
+  "primary_library": "MCR",
   "kobo_database_path": "KoboReader.sqlite"
 }
