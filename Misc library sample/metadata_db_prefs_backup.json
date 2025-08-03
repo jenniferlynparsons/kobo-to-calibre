@@ -1,0 +1,1430 @@
+{
+  "bools_are_tristate": true,
+  "user_categories": {},
+  "saved_searches": {},
+  "grouped_search_terms": {},
+  "tag_browser_hidden_categories": [
+    "formats",
+    "news",
+    "languages",
+    "identifiers",
+    "publisher"
+  ],
+  "library_view books view state": {
+    "column_alignment": {
+      "pubdate": "center",
+      "size": "center",
+      "timestamp": "center"
+    },
+    "column_positions": {
+      "#ao3rating": 16,
+      "#category": 13,
+      "#fandom": 19,
+      "#freeformtags": 18,
+      "#genre": 17,
+      "#reading_time": 23,
+      "#ships": 15,
+      "#status": 14,
+      "#word_ount": 12,
+      "authors": 2,
+      "formats": 21,
+      "id": 20,
+      "languages": 11,
+      "last_modified": 10,
+      "ondevice": 0,
+      "path": 22,
+      "pubdate": 9,
+      "publisher": 8,
+      "rating": 5,
+      "series": 7,
+      "size": 4,
+      "tags": 6,
+      "timestamp": 3,
+      "title": 1
+    },
+    "column_sizes": {
+      "#ao3rating": 100,
+      "#category": 100,
+      "#fandom": 100,
+      "#freeformtags": 100,
+      "#genre": 100,
+      "#reading_time": 100,
+      "#ships": 100,
+      "#status": 100,
+      "#word_ount": 100,
+      "authors": 101,
+      "formats": 0,
+      "id": 0,
+      "languages": 0,
+      "last_modified": 0,
+      "path": 0,
+      "pubdate": 92,
+      "publisher": 89,
+      "rating": 68,
+      "series": 68,
+      "size": 90,
+      "tags": 59,
+      "timestamp": 83,
+      "title": 113
+    },
+    "formats_injected": true,
+    "hidden_columns": [
+      "id",
+      "formats",
+      "path",
+      "last_modified",
+      "languages"
+    ],
+    "id_injected": true,
+    "languages_injected": true,
+    "last_modified_injected": true,
+    "path_injected": true,
+    "sort_history": [
+      [
+        "timestamp",
+        false
+      ],
+      [
+        "#word_ount",
+        true
+      ],
+      [
+        "timestamp",
+        true
+      ]
+    ]
+  },
+  "books view split pane state": {
+    "column_positions": {
+      "#ao3rating": 16,
+      "#category": 13,
+      "#fandom": 19,
+      "#freeformtags": 18,
+      "#genre": 17,
+      "#reading_time": 23,
+      "#ships": 15,
+      "#status": 14,
+      "#word_ount": 12,
+      "authors": 2,
+      "formats": 21,
+      "id": 20,
+      "languages": 11,
+      "last_modified": 10,
+      "ondevice": 0,
+      "path": 22,
+      "pubdate": 9,
+      "publisher": 8,
+      "rating": 5,
+      "series": 7,
+      "size": 4,
+      "tags": 6,
+      "timestamp": 3,
+      "title": 1
+    },
+    "column_sizes": {
+      "#ao3rating": 100,
+      "#category": 100,
+      "#fandom": 100,
+      "#freeformtags": 100,
+      "#genre": 100,
+      "#reading_time": 100,
+      "#ships": 100,
+      "#status": 100,
+      "#word_ount": 100,
+      "authors": 100,
+      "formats": 100,
+      "id": 100,
+      "languages": 100,
+      "last_modified": 100,
+      "path": 100,
+      "pubdate": 100,
+      "publisher": 100,
+      "rating": 100,
+      "series": 100,
+      "size": 100,
+      "tags": 100,
+      "timestamp": 100,
+      "title": 100
+    },
+    "hidden_columns": []
+  },
+  "field_metadata": {
+    "#ao3rating": {
+      "category_sort": "value",
+      "colnum": 1,
+      "column": "value",
+      "datatype": "text",
+      "display": {
+        "description": "",
+        "use_decorations": false
+      },
+      "is_category": true,
+      "is_csp": false,
+      "is_custom": true,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "ao3rating",
+      "link_column": "value",
+      "name": "AO3 Rating",
+      "rec_index": 22,
+      "search_terms": [
+        "#ao3rating"
+      ],
+      "table": "custom_column_1"
+    },
+    "#category": {
+      "category_sort": "value",
+      "colnum": 2,
+      "column": "value",
+      "datatype": "text",
+      "display": {
+        "description": "",
+        "is_names": false
+      },
+      "is_category": true,
+      "is_csp": false,
+      "is_custom": true,
+      "is_editable": true,
+      "is_multiple": {
+        "cache_to_list": "|",
+        "list_to_ui": ", ",
+        "ui_to_list": ","
+      },
+      "kind": "field",
+      "label": "category",
+      "link_column": "value",
+      "name": "Category",
+      "rec_index": 23,
+      "search_terms": [
+        "#category"
+      ],
+      "table": "custom_column_2"
+    },
+    "#fandom": {
+      "category_sort": "value",
+      "colnum": 8,
+      "column": "value",
+      "datatype": "text",
+      "display": {
+        "description": "",
+        "use_decorations": false
+      },
+      "is_category": true,
+      "is_csp": false,
+      "is_custom": true,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "fandom",
+      "link_column": "value",
+      "name": "Fandom",
+      "rec_index": 24,
+      "search_terms": [
+        "#fandom"
+      ],
+      "table": "custom_column_8"
+    },
+    "#freeformtags": {
+      "category_sort": "value",
+      "colnum": 3,
+      "column": "value",
+      "datatype": "text",
+      "display": {
+        "description": "",
+        "is_names": false
+      },
+      "is_category": true,
+      "is_csp": false,
+      "is_custom": true,
+      "is_editable": true,
+      "is_multiple": {
+        "cache_to_list": "|",
+        "list_to_ui": ", ",
+        "ui_to_list": ","
+      },
+      "kind": "field",
+      "label": "freeformtags",
+      "link_column": "value",
+      "name": "AO3 tags",
+      "rec_index": 25,
+      "search_terms": [
+        "#freeformtags"
+      ],
+      "table": "custom_column_3"
+    },
+    "#genre": {
+      "category_sort": "value",
+      "colnum": 4,
+      "column": "value",
+      "datatype": "text",
+      "display": {
+        "description": "",
+        "is_names": false
+      },
+      "is_category": true,
+      "is_csp": false,
+      "is_custom": true,
+      "is_editable": true,
+      "is_multiple": {
+        "cache_to_list": "|",
+        "list_to_ui": ", ",
+        "ui_to_list": ","
+      },
+      "kind": "field",
+      "label": "genre",
+      "link_column": "value",
+      "name": "Genre",
+      "rec_index": 26,
+      "search_terms": [
+        "#genre"
+      ],
+      "table": "custom_column_4"
+    },
+    "#reading_time": {
+      "category_sort": "value",
+      "colnum": 9,
+      "column": "value",
+      "datatype": "composite",
+      "display": {
+        "composite_show_in_comments": false,
+        "composite_sort": "text",
+        "composite_template": "program: \n\n# This program calculate a reading time per hour for an ebook\n\n# Adjustments: \nw_max=250;\n\n# readingtime per hour=60\n\np_time=60;\n\n# Needs a custom column for  word count (#word_count)\n# change it to your field name\n\nwords=raw_field('#word_ount');\n\nminutestoread=divide(words,w_max);\n# .075\n\nhourstoread=divide(minutestoread, 60);\nhours = floor(hourstoread);\nminutes = format_number(mod(minutestoread,60),'{:02d}');\n\nfinaltime=strcat(hours, ':',minutes);\n\nreading_time=finaltime;",
+        "contains_html": true,
+        "description": "",
+        "make_category": true,
+        "use_decorations": false
+      },
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": true,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "reading_time",
+      "link_column": "value",
+      "name": "Reading Time",
+      "rec_index": 27,
+      "search_terms": [
+        "#reading_time"
+      ],
+      "table": "custom_column_9"
+    },
+    "#ships": {
+      "category_sort": "value",
+      "colnum": 5,
+      "column": "value",
+      "datatype": "text",
+      "display": {
+        "description": "",
+        "is_names": false
+      },
+      "is_category": true,
+      "is_csp": false,
+      "is_custom": true,
+      "is_editable": true,
+      "is_multiple": {
+        "cache_to_list": "|",
+        "list_to_ui": ", ",
+        "ui_to_list": ","
+      },
+      "kind": "field",
+      "label": "ships",
+      "link_column": "value",
+      "name": "Ships",
+      "rec_index": 28,
+      "search_terms": [
+        "#ships"
+      ],
+      "table": "custom_column_5"
+    },
+    "#status": {
+      "category_sort": "value",
+      "colnum": 6,
+      "column": "value",
+      "datatype": "text",
+      "display": {
+        "default_value": "Complete",
+        "description": "",
+        "use_decorations": false
+      },
+      "is_category": true,
+      "is_csp": false,
+      "is_custom": true,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "status",
+      "link_column": "value",
+      "name": "Status",
+      "rec_index": 29,
+      "search_terms": [
+        "#status"
+      ],
+      "table": "custom_column_6"
+    },
+    "#word_ount": {
+      "category_sort": "value",
+      "colnum": 7,
+      "column": "value",
+      "datatype": "int",
+      "display": {
+        "description": "",
+        "number_format": null
+      },
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": true,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "word_ount",
+      "link_column": "value",
+      "name": "Word Count",
+      "rec_index": 30,
+      "search_terms": [
+        "#word_ount"
+      ],
+      "table": "custom_column_7"
+    },
+    "au_map": {
+      "column": null,
+      "datatype": "text",
+      "display": {},
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {
+        "cache_to_list": ",",
+        "list_to_ui": null,
+        "ui_to_list": null
+      },
+      "kind": "field",
+      "label": "au_map",
+      "name": null,
+      "rec_index": 18,
+      "search_terms": [],
+      "table": null
+    },
+    "author_sort": {
+      "column": null,
+      "datatype": "text",
+      "display": {},
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "author_sort",
+      "name": "Author sort",
+      "rec_index": 12,
+      "search_terms": [
+        "author_sort"
+      ],
+      "table": null
+    },
+    "authors": {
+      "category_sort": "sort",
+      "column": "name",
+      "datatype": "text",
+      "display": {},
+      "is_category": true,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {
+        "cache_to_list": ",",
+        "list_to_ui": " & ",
+        "ui_to_list": "&"
+      },
+      "kind": "field",
+      "label": "authors",
+      "link_column": "author",
+      "name": "Authors",
+      "rec_index": 2,
+      "search_terms": [
+        "authors",
+        "author"
+      ],
+      "table": "authors"
+    },
+    "comments": {
+      "column": null,
+      "datatype": "text",
+      "display": {},
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "comments",
+      "name": "Comments",
+      "rec_index": 7,
+      "search_terms": [
+        "comments",
+        "comment"
+      ],
+      "table": null
+    },
+    "cover": {
+      "column": null,
+      "datatype": "int",
+      "display": {},
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "cover",
+      "name": "Cover",
+      "rec_index": 17,
+      "search_terms": [
+        "cover"
+      ],
+      "table": null
+    },
+    "formats": {
+      "column": null,
+      "datatype": "text",
+      "display": {},
+      "is_category": true,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {
+        "cache_to_list": ",",
+        "list_to_ui": ", ",
+        "ui_to_list": ","
+      },
+      "kind": "field",
+      "label": "formats",
+      "name": "Formats",
+      "rec_index": 13,
+      "search_terms": [
+        "formats",
+        "format"
+      ],
+      "table": null
+    },
+    "id": {
+      "column": null,
+      "datatype": "int",
+      "display": {},
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "id",
+      "name": "Id",
+      "rec_index": 0,
+      "search_terms": [
+        "id"
+      ],
+      "table": null
+    },
+    "identifiers": {
+      "column": null,
+      "datatype": "text",
+      "display": {},
+      "is_category": true,
+      "is_csp": true,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {
+        "cache_to_list": ",",
+        "list_to_ui": ", ",
+        "ui_to_list": ","
+      },
+      "kind": "field",
+      "label": "identifiers",
+      "name": "Identifiers",
+      "rec_index": 20,
+      "search_terms": [
+        "identifiers",
+        "identifier",
+        "isbn"
+      ],
+      "table": null
+    },
+    "in_tag_browser": {
+      "column": null,
+      "datatype": "text",
+      "display": {},
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "in_tag_browser",
+      "name": null,
+      "rec_index": 34,
+      "search_terms": [
+        "in_tag_browser"
+      ],
+      "table": null
+    },
+    "languages": {
+      "category_sort": "lang_code",
+      "column": "lang_code",
+      "datatype": "text",
+      "display": {},
+      "is_category": true,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {
+        "cache_to_list": ",",
+        "list_to_ui": ", ",
+        "ui_to_list": ","
+      },
+      "kind": "field",
+      "label": "languages",
+      "link_column": "lang_code",
+      "name": "Languages",
+      "rec_index": 21,
+      "search_terms": [
+        "languages",
+        "language"
+      ],
+      "table": "languages"
+    },
+    "last_modified": {
+      "column": null,
+      "datatype": "datetime",
+      "display": {
+        "date_format": "dd MMM yyyy"
+      },
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "last_modified",
+      "name": "Modified",
+      "rec_index": 19,
+      "search_terms": [
+        "last_modified"
+      ],
+      "table": null
+    },
+    "marked": {
+      "column": null,
+      "datatype": "text",
+      "display": {},
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "marked",
+      "name": null,
+      "rec_index": 32,
+      "search_terms": [
+        "marked"
+      ],
+      "table": null
+    },
+    "news": {
+      "category_sort": "name",
+      "column": "name",
+      "datatype": null,
+      "display": {},
+      "is_category": true,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "category",
+      "label": "news",
+      "name": "News",
+      "search_terms": [],
+      "table": "news"
+    },
+    "ondevice": {
+      "column": null,
+      "datatype": "text",
+      "display": {},
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "ondevice",
+      "name": "On device",
+      "rec_index": 31,
+      "search_terms": [
+        "ondevice"
+      ],
+      "table": null
+    },
+    "path": {
+      "column": null,
+      "datatype": "text",
+      "display": {},
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "path",
+      "name": "Path",
+      "rec_index": 14,
+      "search_terms": [],
+      "table": null
+    },
+    "pubdate": {
+      "column": null,
+      "datatype": "datetime",
+      "display": {
+        "date_format": "MMM yyyy"
+      },
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "pubdate",
+      "name": "Published",
+      "rec_index": 15,
+      "search_terms": [
+        "pubdate"
+      ],
+      "table": null
+    },
+    "publisher": {
+      "category_sort": "name",
+      "column": "name",
+      "datatype": "text",
+      "display": {},
+      "is_category": true,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "publisher",
+      "link_column": "publisher",
+      "name": "Publisher",
+      "rec_index": 9,
+      "search_terms": [
+        "publisher"
+      ],
+      "table": "publishers"
+    },
+    "rating": {
+      "category_sort": "rating",
+      "column": "rating",
+      "datatype": "rating",
+      "display": {},
+      "is_category": true,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "rating",
+      "link_column": "rating",
+      "name": "Rating",
+      "rec_index": 5,
+      "search_terms": [
+        "rating"
+      ],
+      "table": "ratings"
+    },
+    "series": {
+      "category_sort": "(title_sort(name))",
+      "column": "name",
+      "datatype": "series",
+      "display": {},
+      "is_category": true,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "series",
+      "link_column": "series",
+      "name": "Series",
+      "rec_index": 8,
+      "search_terms": [
+        "series"
+      ],
+      "table": "series"
+    },
+    "series_index": {
+      "column": null,
+      "datatype": "float",
+      "display": {},
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "series_index",
+      "name": null,
+      "rec_index": 10,
+      "search_terms": [
+        "series_index"
+      ],
+      "table": null
+    },
+    "series_sort": {
+      "column": null,
+      "datatype": "text",
+      "display": {},
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "series_sort",
+      "name": "Series sort",
+      "rec_index": 33,
+      "search_terms": [
+        "series_sort"
+      ],
+      "table": null
+    },
+    "size": {
+      "column": null,
+      "datatype": "float",
+      "display": {},
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "size",
+      "name": "Size",
+      "rec_index": 4,
+      "search_terms": [
+        "size"
+      ],
+      "table": null
+    },
+    "sort": {
+      "column": null,
+      "datatype": "text",
+      "display": {},
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "sort",
+      "name": "Title sort",
+      "rec_index": 11,
+      "search_terms": [
+        "title_sort"
+      ],
+      "table": null
+    },
+    "tags": {
+      "category_sort": "name",
+      "column": "name",
+      "datatype": "text",
+      "display": {},
+      "is_category": true,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {
+        "cache_to_list": ",",
+        "list_to_ui": ", ",
+        "ui_to_list": ","
+      },
+      "kind": "field",
+      "label": "tags",
+      "link_column": "tag",
+      "name": "Tags",
+      "rec_index": 6,
+      "search_terms": [
+        "tags",
+        "tag"
+      ],
+      "table": "tags"
+    },
+    "timestamp": {
+      "column": null,
+      "datatype": "datetime",
+      "display": {
+        "date_format": "dd MMM yyyy"
+      },
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "timestamp",
+      "name": "Date",
+      "rec_index": 3,
+      "search_terms": [
+        "date"
+      ],
+      "table": null
+    },
+    "title": {
+      "column": null,
+      "datatype": "text",
+      "display": {},
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "title",
+      "name": "Title",
+      "rec_index": 1,
+      "search_terms": [
+        "title"
+      ],
+      "table": null
+    },
+    "uuid": {
+      "column": null,
+      "datatype": "text",
+      "display": {},
+      "is_category": false,
+      "is_csp": false,
+      "is_custom": false,
+      "is_editable": true,
+      "is_multiple": {},
+      "kind": "field",
+      "label": "uuid",
+      "name": null,
+      "rec_index": 16,
+      "search_terms": [
+        "uuid"
+      ],
+      "table": null
+    }
+  },
+  "gui_view_history": [
+    [
+      485,
+      "key-dialogues-reference"
+    ],
+    [
+      435,
+      "Luna Station Quarterly - Issue 056"
+    ],
+    [
+      433,
+      "Luna Station 056-epub"
+    ],
+    [
+      154,
+      "deo volente (lux aeterna)"
+    ],
+    [
+      13,
+      "Later and Forever"
+    ],
+    [
+      337,
+      "A Surprise in the Snow"
+    ],
+    [
+      311,
+      "A Party to Forget"
+    ],
+    [
+      64,
+      "Coffee, Black"
+    ],
+    [
+      910,
+      "I Believe We're The Enemy"
+    ],
+    [
+      940,
+      "New Year's Wishes"
+    ],
+    [
+      957,
+      "Caffeine Smiles"
+    ],
+    [
+      1246,
+      "Fishbone Anthology"
+    ],
+    [
+      872,
+      "Calibrations"
+    ],
+    [
+      1206,
+      "LSQ 051 stories"
+    ],
+    [
+      1184,
+      "The Umbrella Academy v03"
+    ]
+  ],
+  "namespaced:EpubMergePlugin:settings": {
+    "custom_cols": {},
+    "firstseries": false,
+    "flattentoc": false,
+    "includecomments": false,
+    "keepmeta": true,
+    "mergetags": "",
+    "mergeword": "Anthology",
+    "originalnavpoints": true,
+    "titlenavpoints": true
+  },
+  "namespaced:ViewManagerPlugin:settings": {
+    "SchemaVersion": 1.5,
+    "autoApplyView": false,
+    "lastView": "",
+    "viewToApply": "*Last View Used",
+    "views": {}
+  },
+  "namespaced:GenerateCoverPlugin:settings": {
+    "SchemaVersion": 1.59,
+    "updateColumn": "",
+    "updateValue": ""
+  },
+  "namespaced:CountPagesPlugin:settings": {
+    "SchemaVersion": 1.61,
+    "algorithmPages": 0,
+    "customCharsPerPage": 1500,
+    "customColumnFleschGrade": "",
+    "customColumnFleschReading": "",
+    "customColumnGunningFog": "",
+    "customColumnPages": "#word_ount",
+    "customColumnWords": "#word_ount"
+  },
+  "update_all_last_mod_dates_on_start": false,
+  "popup_book_display_fields": [
+    [
+      "title",
+      true
+    ],
+    [
+      "authors",
+      true
+    ],
+    [
+      "series",
+      true
+    ],
+    [
+      "identifiers",
+      true
+    ],
+    [
+      "tags",
+      true
+    ],
+    [
+      "formats",
+      true
+    ],
+    [
+      "path",
+      true
+    ],
+    [
+      "publisher",
+      true
+    ],
+    [
+      "rating",
+      true
+    ],
+    [
+      "author_sort",
+      true
+    ],
+    [
+      "sort",
+      true
+    ],
+    [
+      "timestamp",
+      true
+    ],
+    [
+      "uuid",
+      true
+    ],
+    [
+      "comments",
+      true
+    ],
+    [
+      "id",
+      true
+    ],
+    [
+      "pubdate",
+      true
+    ],
+    [
+      "last_modified",
+      true
+    ],
+    [
+      "size",
+      true
+    ],
+    [
+      "languages",
+      true
+    ],
+    [
+      "#word_ount",
+      true
+    ]
+  ],
+  "namespaced:FanFicFarePlugin:settings": {
+    "adddialogstaysontop": false,
+    "addtolists": false,
+    "addtolistsonread": false,
+    "addtoreadlists": false,
+    "allow_custcol_from_ini": true,
+    "allow_gc_from_ini": true,
+    "anth_comments_newonly": true,
+    "authorcase": false,
+    "auto_reject_from_email": false,
+    "auto_reject_seriesurlid": false,
+    "autoconvert": false,
+    "autounnew": false,
+    "bgmeta": false,
+    "button_instantpopup": false,
+    "cal_cols_pass_in": true,
+    "calibre_gen_cover": false,
+    "checkforseriesurlid": true,
+    "checkforurlchange": true,
+    "collision": "Update EPUB if New Chapters",
+    "countpagesstats": [
+      "WordCount"
+    ],
+    "covernewonly": false,
+    "custom_cols": {
+      "#ao3rating": "rating",
+      "#category": "category",
+      "#freeformtags": "extratags",
+      "#genre": "genre",
+      "#ships": "ships",
+      "#status": "status",
+      "#word_ount": "numWords"
+    },
+    "custom_cols_newonly": {
+      "#ao3rating": false,
+      "#category": false,
+      "#fandom": false,
+      "#freeformtags": false,
+      "#genre": false,
+      "#ships": false,
+      "#status": false,
+      "#word_ount": false
+    },
+    "deleteotherforms": false,
+    "do_wordcount": "Yes",
+    "download_from_email_immediately": false,
+    "errorcol": "None",
+    "fileform": "epub",
+    "gc_polish_cover": false,
+    "gc_site_settings": {
+      "Default": "misc fanfic"
+    },
+    "gcnewonly": false,
+    "gencalcover": "Yes",
+    "imapfolder": "INBOX",
+    "imapmarkread": true,
+    "imappass": "",
+    "imapserver": "",
+    "imapsessionpass": false,
+    "imaptags": "",
+    "imapuser": "",
+    "includecomments": false,
+    "injectseries": false,
+    "keeptags": false,
+    "last_saved_version": [
+      4,
+      29,
+      0
+    ],
+    "lastcheckedcol": "None",
+    "lookforurlinhtml": false,
+    "mark": false,
+    "mark_chapter_error": true,
+    "mark_failed": true,
+    "mark_series_anthologies": false,
+    "mark_success": true,
+    "matchtitleauth": true,
+    "personal.ini": "## This is an example of what your personal configuration might look\n## like.  Uncomment options by removing the '#' in front of them.\n\n[defaults]\n## [defaults] section applies to all formats and sites but may be\n## overridden at several levels.  Example:\n\n## [defaults]\n## titlepage_entries: category,genre, status\n## [www.whofic.com]\n## # overrides defaults.\n## titlepage_entries: category,genre, status,dateUpdated,rating\n## [epub]\n## # overrides defaults & site section\n## titlepage_entries: category,genre, status,datePublished,dateUpdated,dateCreated\n## [www.whofic.com:epub]\n## # overrides defaults, site section & format section\n## titlepage_entries: category,genre, status,datePublished\n## [overrides]\n## # overrides all other sections\n## titlepage_entries: category\n\n## Some sites also require the user to confirm they are adult for\n## adult content.  Uncomment by removing '#' in front of is_adult.\nis_adult:true\n\n## Don't like the numbers at the start of chapter titles on some\n## sites?  You can use strip_chapter_numbers to strip them off.  Just\n## want to make them all look the same?  Strip them off, then add them\n## back on with add_chapter_numbers.  Don't like the way it strips\n## numbers or adds them back?  See chapter_title_strip_pattern and\n## chapter_title_add_pattern.\n#strip_chapter_numbers:true\n#add_chapter_numbers:true\n\n## Add this to genre if there's more than one category.\n#add_genre_when_multi_category: Crossover\n\n[epub]\n## include images from img tags in the body and summary of stories.\n## Images will be converted to jpg for size if possible.  Images work\n## in epub format only.  To get mobi or other format with images,\n## download as epub and use Calibre to convert.\ninclude_images:true\n\n## Quality level to use when converting images to jpg. Range is 0-100,\n## reasonable values likely to be in the range 70-95.\n#jpg_quality: 95\n\n## If not set, the summary will have all html stripped for safety.\n## Both this and include_images must be true to get images in the\n## summary.\n#keep_summary_html:true\n\n## If set, the first image found will be made the cover image.  If\n## keep_summary_html is true, any images in summary will be before any\n## in chapters.\n#make_firstimage_cover:true\n\n## Resize images down to width, height, preserving aspect ratio.\n## Nook size, with margin.\nimage_max_size: 580, 725\n\n## Change image to grayscale, if graphics library allows, to save\n## space.\n#grayscale_images: false\n\n\n## Most common, I expect will be using this to save username/passwords\n## for different sites.  Here are a few examples.  See defaults.ini\n## for the full list.\n\n[www.twilighted.net]\n#username:YourPenname\n#password:YourPassword\n## default is false\n#collect_series: true\n\n[ficwad.com]\n#username:YourUsername\n#password:YourPassword\n\n[www.adastrafanfic.com]\n## Some sites do not require a login, but do require the user to\n## confirm they are adult for adult content.\n#is_adult:true\n\n[www.twcslibrary.net]\n#username:YourName\n#password:yourpassword\n#is_adult:true\n## default is false\n#collect_series: true\n\n[www.fimfiction.net]\n#is_adult:true\n#fail_on_password: false\n\n[www.tthfanfic.org]\n#is_adult:true\n## tth is a little unusual--it doesn't require user/pass, but the site\n## keeps track of which chapters you've read and won't send another\n## update until it thinks you're up to date.  This way, on download,\n## it thinks you're up to date.\n#username:YourName\n#password:yourpassword\n\n\n## This section will override anything in the system defaults or other\n## sections here.\n[overrides]\n## default varies by site.  Set true here to force all sites to\n## collect series.\n#collect_series: true\n\n\n[archiveofourown.org]\nuse_basic_cache:true\nusername:just_a_kid_from_jersey\npassword:boogadoo1\nuse_view_full_work:true\nkeep_in_order_ao3categories:true\nkeep_in_order_category:true\nkeep_in_order_characters:true\nkeep_in_order_dateRange:true\nkeep_in_order_fandoms:true\nkeep_in_order_freeformtags:true\nkeep_in_order_genre:true\nkeep_in_order_ships:true\nadd_to_extra_valid_entries:,prefix_ships,prefix_category,prefix_rating,prefix_status,keep_ships,dateRange\ninclude_in_prefix_ships:ships\ninclude_in_keep_ships:ships\ninclude_in_prefix_category:category\ninclude_in_prefix_rating:rating\ninclude_in_prefix_status:status\ninclude_in_dateRange:datePublished, dateUpdated\ncategory_label:Fandom\ncharacters_label:Additional Characters\nfreeformtags_label:Additional Tags\nfreefromtags_label:Additional Tags\nao3categories_label:Category\nchapterslashtotal_label:Chapters\ninclude_in_genre: ao3categories\nadd_to_custom_columns_settings:\n category=>#ao3_category\n chapterslashtotal=>#ao3_chapters\n characters=>#ao3_characters\n dateRange=>#ao3_date\n dateUpdated=>#ao3_dateupdated\n freeformtags=>#freeformtags\n rating=>#ao3_rating\n ships=>#ao3_ships\n genres=>#genre\n",
+    "plugin_gen_cover": true,
+    "read_lists": "",
+    "reject_always": false,
+    "reject_delete_default": true,
+    "rejectreasons": "Sucked\nBoring\nDup from another site",
+    "save_all_errors": true,
+    "savemetacol": "",
+    "send_lists": "",
+    "set_author_url": true,
+    "set_series_url": true,
+    "setanthologyseries": false,
+    "show_est_time": false,
+    "showmarked": false,
+    "smarten_punctuation": false,
+    "std_cols_newonly": {
+      "authors": false,
+      "comments": false,
+      "identifiers": false,
+      "languages": false,
+      "pubdate": false,
+      "publisher": false,
+      "series": false,
+      "tags": false,
+      "timestamp": false,
+      "title": false
+    },
+    "suppressauthorsort": false,
+    "suppresstitlesort": false,
+    "titlecase": false,
+    "update_existing_only_from_email": false,
+    "updatecalcover": "Yes, if img",
+    "updatecover": false,
+    "updatedefault": true,
+    "updateepubcover": false,
+    "updatemeta": true,
+    "urlsfromclip": true,
+    "wordcountmissing": true
+  },
+  "namespaced:FanFicFarePlugin:rejects_data": {
+    "last_saved_version": [
+      4,
+      11,
+      0
+    ],
+    "rejecturls_data": []
+  },
+  "namespaced:CategoryTagsPlugin:settings": {
+    "exportLastSettings": {},
+    "importLastSettings": {},
+    "schemaVersion": 1.0
+  },
+  "categories_using_hierarchy": [
+    "#category"
+  ],
+  "book_display_fields": [
+    [
+      "title",
+      false
+    ],
+    [
+      "authors",
+      true
+    ],
+    [
+      "series",
+      true
+    ],
+    [
+      "identifiers",
+      true
+    ],
+    [
+      "tags",
+      true
+    ],
+    [
+      "formats",
+      true
+    ],
+    [
+      "path",
+      true
+    ],
+    [
+      "publisher",
+      false
+    ],
+    [
+      "rating",
+      false
+    ],
+    [
+      "author_sort",
+      false
+    ],
+    [
+      "sort",
+      false
+    ],
+    [
+      "timestamp",
+      false
+    ],
+    [
+      "uuid",
+      false
+    ],
+    [
+      "comments",
+      true
+    ],
+    [
+      "id",
+      false
+    ],
+    [
+      "pubdate",
+      false
+    ],
+    [
+      "last_modified",
+      false
+    ],
+    [
+      "size",
+      false
+    ],
+    [
+      "languages",
+      false
+    ],
+    [
+      "#category",
+      true
+    ],
+    [
+      "#word_ount",
+      true
+    ]
+  ],
+  "edit_metadata_custom_columns_to_display": [
+    [
+      "#category",
+      true
+    ],
+    [
+      "#word_ount",
+      true
+    ]
+  ],
+  "qv_display_fields": [
+    [
+      "title",
+      true
+    ],
+    [
+      "authors",
+      true
+    ],
+    [
+      "series",
+      true
+    ],
+    [
+      "languages",
+      false
+    ],
+    [
+      "formats",
+      false
+    ],
+    [
+      "publisher",
+      false
+    ],
+    [
+      "rating",
+      false
+    ],
+    [
+      "tags",
+      false
+    ],
+    [
+      "identifiers",
+      false
+    ],
+    [
+      "author_sort",
+      false
+    ],
+    [
+      "id",
+      false
+    ],
+    [
+      "last_modified",
+      false
+    ],
+    [
+      "path",
+      false
+    ],
+    [
+      "pubdate",
+      false
+    ],
+    [
+      "sort",
+      false
+    ],
+    [
+      "size",
+      false
+    ],
+    [
+      "timestamp",
+      false
+    ],
+    [
+      "uuid",
+      false
+    ],
+    [
+      "#category",
+      false
+    ],
+    [
+      "#word_ount",
+      false
+    ]
+  ],
+  "column_color_rules": [],
+  "column_icon_rules": [],
+  "cover_grid_icon_rules": [],
+  "news_to_be_synced": [],
+  "tag_browser_category_order": [
+    "authors",
+    "languages",
+    "series",
+    "formats",
+    "publisher",
+    "rating",
+    "news",
+    "tags",
+    "identifiers",
+    "#ao3rating",
+    "#category",
+    "#freeformtags",
+    "#genre",
+    "#ships",
+    "#status"
+  ],
+  "last_expired_trash_at": 1743865368.799274
+}

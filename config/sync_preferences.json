@@ -1,0 +1,21 @@
+{
+  "matching": {
+    "strict_matching": true,
+    "manual_conflict_resolution": true,
+    "skip_uncertain_matches": true
+  },
+  "backup": {
+    "backup_metadata_db": true,
+    "backup_directory": "backups"
+  },
+  "logging": {
+    "level": "INFO",
+    "file_logging": true,
+    "console_logging": true
+  },
+  "ui": {
+    "dry_run_optional": true,
+    "verbose_progress": true,
+    "gui_enabled": true
+  }
+}
