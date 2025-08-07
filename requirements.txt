@@ -1,0 +1,23 @@
+# Kobo-to-Calibre Sync Tool Requirements
+# 
+# This project uses only Python standard library modules
+# No external dependencies required!
+#
+# Required Python version: 3.7+
+#
+# Standard library modules used:
+# - tkinter (GUI)
+# - sqlite3 (database access)
+# - subprocess (calibredb commands)
+# - logging (logging system)
+# - pathlib (file path handling)
+# - datetime (timestamps)
+# - shutil (file operations)
+# - re (regular expressions)
+# - threading (background operations)
+#
+# System requirements:
+# - Calibre application installed (for calibredb command)
+# - macOS/Linux/Windows (cross-platform compatible)
+#
+# No pip install required - everything is built-in! 🎉
