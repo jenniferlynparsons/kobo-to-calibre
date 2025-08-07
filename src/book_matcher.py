@@ -83,6 +83,34 @@ class BookMatcher:
         
         return normalized
     
+    def _check_author_match(self, kobo_author_norm: str, calibre_authors_str: str) -> Optional[Dict]:
+        """Check if Kobo author matches Calibre authors (handling multiple authors)."""
+        if not kobo_author_norm or not calibre_authors_str:
+            return None
+        
+        calibre_author_norm = self.normalize_author(calibre_authors_str)
+        
+        # Exact match
+        if kobo_author_norm == calibre_author_norm:
+            return {'type': 'exact', 'confidence': 1.0}
+        
+        # Check if Kobo author is contained in Calibre authors
+        # Handle cases like "akamine_chan" matching "jiksa & akamine_chan"
+        calibre_authors_list = [author.strip() for author in calibre_author_norm.split('&')]
+        
+        for calibre_author in calibre_authors_list:
+            calibre_author = calibre_author.strip()
+            if kobo_author_norm == calibre_author:
+                return {'type': 'partial_author', 'confidence': 0.9}
+        
+        # Check if any Calibre author is contained in Kobo author (reverse case)
+        for calibre_author in calibre_authors_list:
+            calibre_author = calibre_author.strip()
+            if calibre_author in kobo_author_norm or kobo_author_norm in calibre_author:
+                return {'type': 'author_contains', 'confidence': 0.8}
+        
+        return None
+    
     def find_book_in_library(self, kobo_book: KoboBook, library: CalibreLibrary) -> Optional[BookMatch]:
         """Find a book in a specific Calibre library."""
         try:
@@ -111,20 +139,32 @@ class BookMatcher:
             
             for book in calibre_books:
                 calibre_title_norm = self.normalize_title(book['title'])
-                calibre_author_norm = self.normalize_author(book['authors'] or "")
+                calibre_authors_str = book['authors'] or ""
                 
-                # Exact normalized match
-                if (kobo_title_norm == calibre_title_norm and 
-                    kobo_author_norm == calibre_author_norm):
+                # Title must match exactly
+                if kobo_title_norm != calibre_title_norm:
+                    continue
+                
+                # Check author matching - handle multiple authors
+                author_match = self._check_author_match(kobo_author_norm, calibre_authors_str)
+                
+                if author_match:
+                    match_type = author_match['type']
+                    confidence = author_match['confidence']
+                    
+                    self.logger.debug(
+                        f"✅ Found {match_type} match: '{kobo_book.title}' "
+                        f"(Kobo: '{kobo_book.author}' → Calibre: '{calibre_authors_str}')"
+                    )
                     
                     return BookMatch(
                         kobo_book=kobo_book,
                         calibre_book_id=book['id'],
                         calibre_title=book['title'],
-                        calibre_authors=book['authors'] or "",
+                        calibre_authors=calibre_authors_str,
                         library=library,
-                        match_confidence=1.0,
-                        match_type='exact'
+                        match_confidence=confidence,
+                        match_type=match_type
                     )
             
             # If no exact match found, return None (strict matching only)

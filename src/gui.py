@@ -137,9 +137,21 @@ class KoboSyncGUI:
                                       values=["DEBUG", "INFO", "WARNING", "ERROR"])
         log_level_combo.pack(side=tk.LEFT, padx=5)
         
-        # Clear logs button
-        clear_btn = ttk.Button(level_frame, text="Clear Logs", command=self._clear_logs)
-        clear_btn.pack(side=tk.RIGHT, padx=5)
+        # Log management buttons
+        log_buttons_frame = ttk.Frame(self.logs_frame)
+        log_buttons_frame.pack(fill=tk.X, padx=5, pady=5)
+        
+        ttk.Button(log_buttons_frame, text="📂 Open Logs Folder", 
+                  command=self._open_logs_folder).pack(side=tk.LEFT, padx=5)
+        
+        ttk.Button(log_buttons_frame, text="📄 Open Unmatched Report", 
+                  command=self._open_unmatched_report).pack(side=tk.LEFT, padx=5)
+        
+        ttk.Button(log_buttons_frame, text="🔄 Rotate Logs", 
+                  command=self._rotate_logs).pack(side=tk.LEFT, padx=5)
+        
+        ttk.Button(log_buttons_frame, text="🗑️ Clear Old Logs", 
+                  command=self._clear_old_logs).pack(side=tk.LEFT, padx=5)
         
         # Log display
         self.log_text = scrolledtext.ScrolledText(self.logs_frame)
@@ -480,3 +492,128 @@ class KoboSyncGUI:
         """Start the GUI application."""
         self.logger.info("Starting Kobo-to-Calibre Sync GUI")
         self.root.mainloop()
+    
+    def _open_logs_folder(self):
+        """Open the logs folder in file manager."""
+        import subprocess
+        import os
+        from pathlib import Path
+        
+        logs_path = Path("logs")
+        if logs_path.exists():
+            try:
+                # macOS
+                subprocess.run(["open", str(logs_path)])
+                self.logger.info(f"📂 Opened logs folder: {logs_path.absolute()}")
+            except Exception as e:
+                self.logger.error(f"Failed to open logs folder: {e}")
+        else:
+            messagebox.showwarning("Logs Folder", "Logs folder does not exist yet.")
+    
+    def _open_unmatched_report(self):
+        """Open the most recent unmatched books report."""
+        import subprocess
+        from pathlib import Path
+        import glob
+        
+        logs_path = Path("logs")
+        if not logs_path.exists():
+            messagebox.showwarning("No Reports", "No logs folder found.")
+            return
+        
+        # Find most recent unmatched books report
+        pattern = str(logs_path / "unmatched_books_*.txt")
+        reports = glob.glob(pattern)
+        
+        if not reports:
+            messagebox.showinfo("No Reports", "No unmatched books reports found.")
+            return
+        
+        # Get most recent report
+        latest_report = max(reports, key=os.path.getctime)
+        
+        try:
+            # Open with default text editor
+            subprocess.run(["open", latest_report])
+            self.logger.info(f"📄 Opened unmatched report: {latest_report}")
+        except Exception as e:
+            self.logger.error(f"Failed to open unmatched report: {e}")
+            messagebox.showerror("Error", f"Failed to open report: {e}")
+    
+    def _rotate_logs(self):
+        """Rotate current logs (archive old ones)."""
+        try:
+            from pathlib import Path
+            import shutil
+            from datetime import datetime
+            
+            logs_path = Path("logs")
+            if not logs_path.exists():
+                messagebox.showinfo("No Logs", "No logs to rotate.")
+                return
+            
+            # Create archive name with timestamp
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            archive_name = f"kobo_sync_archived_{timestamp}.log"
+            archive_path = logs_path / archive_name
+            
+            # Archive main log file
+            main_log = logs_path / "kobo_sync.log"
+            if main_log.exists():
+                shutil.move(str(main_log), str(archive_path))
+                self.logger.info(f"📦 Archived log to: {archive_name}")
+                messagebox.showinfo("Logs Rotated", f"Archived current log to: {archive_name}")
+            else:
+                messagebox.showinfo("No Active Log", "No active log file to rotate.")
+                
+        except Exception as e:
+            self.logger.error(f"Failed to rotate logs: {e}")
+            messagebox.showerror("Error", f"Failed to rotate logs: {e}")
+    
+    def _clear_old_logs(self):
+        """Clear old log files (keep recent ones)."""
+        try:
+            from pathlib import Path
+            import glob
+            import os
+            
+            logs_path = Path("logs")
+            if not logs_path.exists():
+                messagebox.showinfo("No Logs", "No logs folder found.")
+                return
+            
+            # Get all log files
+            log_files = []
+            for pattern in ["*.log", "unmatched_books_*.txt"]:
+                log_files.extend(glob.glob(str(logs_path / pattern)))
+            
+            if len(log_files) <= 5:  # Keep at least 5 recent files
+                messagebox.showinfo("Keep Logs", f"Only {len(log_files)} log files found. Keeping all recent logs.")
+                return
+            
+            # Sort by modification time, keep newest 5
+            log_files.sort(key=os.path.getmtime, reverse=True)
+            files_to_delete = log_files[5:]  # Delete older files
+            
+            # Confirm deletion
+            response = messagebox.askyesno(
+                "Confirm Cleanup",
+                f"Delete {len(files_to_delete)} old log files?\\n\\n"
+                f"This will keep the 5 most recent logs."
+            )
+            
+            if response:
+                deleted_count = 0
+                for file_path in files_to_delete:
+                    try:
+                        os.remove(file_path)
+                        deleted_count += 1
+                    except Exception as e:
+                        self.logger.warning(f"Could not delete {file_path}: {e}")
+                
+                self.logger.info(f"🗑️ Deleted {deleted_count} old log files")
+                messagebox.showinfo("Cleanup Complete", f"Deleted {deleted_count} old log files.")
+                
+        except Exception as e:
+            self.logger.error(f"Failed to clear old logs: {e}")
+            messagebox.showerror("Error", f"Failed to clear logs: {e}")
