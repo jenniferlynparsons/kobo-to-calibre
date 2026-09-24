@@ -205,3 +205,12 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Personal data: Kobo DBs, sample libraries, logs
+KoboReader.sqlite*
+src/KoboReader.sqlite*
+MCR library sample/
+Misc library sample/
+backups/
+logs/
+.DS_Store

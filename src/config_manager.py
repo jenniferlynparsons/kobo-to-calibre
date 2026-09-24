@@ -39,7 +39,7 @@ class ConfigManager:
                 ],
                 "discovered_libraries": {},
                 "primary_library": "",
-                "kobo_database_path": "KoboReader.sqlite"
+                "kobo_database_path": "/Users/jenniferparsons/Desktop/KoboReader.sqlite"
             }
             self._save_json(self.library_mappings_file, default_mappings)
         
@@ -131,7 +131,7 @@ class ConfigManager:
     def get_kobo_database_path(self) -> str:
         """Get path to Kobo database."""
         mappings = self.get_library_mappings()
-        return mappings.get("kobo_database_path", "KoboReader.sqlite")
+        return mappings.get("kobo_database_path", "/Users/jenniferparsons/Desktop/KoboReader.sqlite")
     
     def get_search_paths(self) -> List[str]:
         """Get list of paths to search for Calibre libraries."""

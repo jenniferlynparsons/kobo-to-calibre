@@ -178,10 +178,9 @@ class CalibreUpdater:
         else:
             self.logger.info(f"✅ 'myratings' column already exists in {library.name}")
         
+        # Genres are opt-in per library: never create 'my_genres', only write to it if it exists
         if not columns['my_genres']:
-            self.logger.info(f"⚠️ Creating missing 'my_genres' column in {library.name}")
-            if not self.create_custom_column(library, 'my_genres', 'My Genres'):
-                success = False
+            self.logger.info(f"⏭️ No 'my_genres' column in {library.name}, genres will be skipped")
         else:
             self.logger.info(f"✅ 'my_genres' column already exists in {library.name}")
         
@@ -205,7 +204,7 @@ class CalibreUpdater:
                     return False
             
             # Update My Genres column
-            if genre_collections:
+            if genre_collections and self._verify_column_exists(match.library, 'my_genres'):
                 if not self._update_custom_column(
                     match.library, 
                     match.calibre_book_id, 
