@@ -8,6 +8,9 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 
+# Only stat()-ed to check the Desktop copy's age; never opened
+DEVICE_DB = Path("/Volumes/KOBOeReader/.kobo/KoboReader.sqlite")
+
 
 @dataclass
 class KoboBook:
@@ -53,6 +56,11 @@ class KoboReader:
             raise ValueError(f"Refusing mounted Kobo DB {self.db_path}; copy it to ~/Desktop first")
         if not self.db_path.exists():
             raise FileNotFoundError(f"Kobo database not found: {self.db_path}")
+        # A stale copy would overwrite newer calibre ratings with old ones
+        if not DEVICE_DB.exists():
+            self.logger.warning("Kobo not mounted, cannot check if the Desktop copy is current")
+        elif DEVICE_DB.stat().st_mtime > self.db_path.stat().st_mtime + 2:  # FAT32 mtime is 2s
+            raise ValueError(f"{self.db_path} is older than the Kobo DB; copy it to ~/Desktop again")
 
         conn = sqlite3.connect(f"{self.db_path.resolve().as_uri()}?mode=ro", uri=True)
         conn.row_factory = sqlite3.Row  # Enable dict-like access
