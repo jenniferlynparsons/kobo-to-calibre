@@ -8,13 +8,11 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent / "src"))
 from kobo_reader import KoboReader
 
-mounted = Path("/Volumes/KOBOeReader/.kobo/KoboReader.sqlite")
-if mounted.exists():
-    try:
-        KoboReader(str(mounted)).connect()
-        raise AssertionError("mounted DB was opened")
-    except ValueError:
-        pass
+try:
+    KoboReader("/Volumes/KOBOeReader/.kobo/KoboReader.sqlite").connect()
+    raise AssertionError("mounted DB was opened")
+except ValueError:
+    pass
 
 with tempfile.TemporaryDirectory() as d:
     copy = Path(d) / "Kobo Reader.sqlite"  # space checks URI escaping
