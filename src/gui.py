@@ -5,6 +5,7 @@ GUI - Tkinter interface for multi-library sync operations
 import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
 import threading
+import queue
 import logging
 from typing import List, Dict
 
@@ -110,7 +111,7 @@ class KoboSyncGUI:
         
         ttk.Label(kobo_frame, text="Database Path:").pack(anchor=tk.W, padx=10, pady=5)
         self.kobo_path_var = tk.StringVar(value=self.config_manager.get_kobo_database_path())
-        kobo_path_entry = ttk.Entry(kobo_frame, textvariable=self.kobo_path_var, width=60)
+        kobo_path_entry = ttk.Entry(kobo_frame, textvariable=self.kobo_path_var, width=60, state='readonly')
         kobo_path_entry.pack(fill=tk.X, padx=10, pady=5)
         
         # Library search paths
@@ -126,16 +127,6 @@ class KoboSyncGUI:
     
     def _create_logs_tab(self):
         """Create logs display interface."""
-        
-        # Log level selection
-        level_frame = ttk.Frame(self.logs_frame)
-        level_frame.pack(fill=tk.X, padx=5, pady=5)
-        
-        ttk.Label(level_frame, text="Log Level:").pack(side=tk.LEFT, padx=5)
-        self.log_level_var = tk.StringVar(value="INFO")
-        log_level_combo = ttk.Combobox(level_frame, textvariable=self.log_level_var, 
-                                      values=["DEBUG", "INFO", "WARNING", "ERROR"])
-        log_level_combo.pack(side=tk.LEFT, padx=5)
         
         # Log management buttons
         log_buttons_frame = ttk.Frame(self.logs_frame)
@@ -161,20 +152,27 @@ class KoboSyncGUI:
         """Setup custom logging handler to display logs in GUI."""
         
         class GUILogHandler(logging.Handler):
-            def __init__(self, text_widget):
+            def __init__(self, log_queue):
                 super().__init__()
-                self.text_widget = text_widget
+                self.log_queue = log_queue
             
             def emit(self, record):
-                msg = self.format(record)
-                self.text_widget.insert(tk.END, msg + '\n')
-                self.text_widget.see(tk.END)
+                self.log_queue.put(self.format(record))
         
-        gui_handler = GUILogHandler(self.log_text)
+        self.log_queue = queue.SimpleQueue()
+        gui_handler = GUILogHandler(self.log_queue)
+        self._drain_log_queue()
         gui_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
         
         # Add handler to root logger
         logging.getLogger().addHandler(gui_handler)
+    
+    def _drain_log_queue(self):
+        """Show queued log lines. Tk is not thread-safe, so only the main loop writes to it."""
+        while not self.log_queue.empty():
+            self.log_text.insert(tk.END, self.log_queue.get() + '\n')
+            self.log_text.see(tk.END)
+        self.root.after(100, self._drain_log_queue)
     
     def _on_dry_run_toggle(self):
         """Handle dry run checkbox toggle."""
@@ -484,10 +482,6 @@ class KoboSyncGUI:
         
         return resolved_matches
     
-    def _clear_logs(self):
-        """Clear the log display."""
-        self.log_text.delete(1.0, tk.END)
-    
     def run(self):
         """Start the GUI application."""
         self.logger.info("Starting Kobo-to-Calibre Sync GUI")
@@ -513,6 +507,7 @@ class KoboSyncGUI:
     def _open_unmatched_report(self):
         """Open the most recent unmatched books report."""
         import subprocess
+        import os
         from pathlib import Path
         import glob
         
@@ -598,7 +593,7 @@ class KoboSyncGUI:
             # Confirm deletion
             response = messagebox.askyesno(
                 "Confirm Cleanup",
-                f"Delete {len(files_to_delete)} old log files?\\n\\n"
+                f"Delete {len(files_to_delete)} old log files?\n\n"
                 f"This will keep the 5 most recent logs."
             )
             
