@@ -50,8 +50,11 @@ class KoboReader:
         """Create connection to Kobo database."""
         if not self.db_path.exists():
             raise FileNotFoundError(f"Kobo database not found: {self.db_path}")
-        
-        conn = sqlite3.connect(self.db_path)
+        # Never read the mounted device DB; always work from a Desktop copy
+        if self.db_path.resolve().parts[1:2] == ('Volumes',):
+            raise ValueError(f"Refusing mounted Kobo DB {self.db_path}; copy it to ~/Desktop first")
+
+        conn = sqlite3.connect(f"{self.db_path.resolve().as_uri()}?mode=ro", uri=True)
         conn.row_factory = sqlite3.Row  # Enable dict-like access
         return conn
     

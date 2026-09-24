@@ -171,19 +171,23 @@ class SyncEngine:
         
         # Log what would be updated
         for lib_name, lib_matches in by_library.items():
-            self.logger.info(f"Would update {len(lib_matches)} books in {lib_name}:")
-            for match in lib_matches[:5]:  # Show first 5 examples
-                rating_cols = [col for col in match.kobo_book.collections 
-                              if col in self.kobo_reader.rating_collections]
-                genre_cols = [col for col in match.kobo_book.collections 
-                             if col not in self.kobo_reader.rating_collections]
-                
+            # Same filters and column check as the real run, so the preview matches it
+            updater = self.calibre_updater
+            has_genres = updater._verify_column_exists(lib_matches[0].library, 'my_genres')
+            rated = [m for m in lib_matches
+                     if updater._get_rating_collections(m.kobo_book.collections)]
+            self.logger.info(f"Would update {len(lib_matches)} books in {lib_name} "
+                             f"({len(rated)} with ratings):")
+            for match in (rated or lib_matches)[:5]:  # Show first 5 examples
+                rating_cols = updater._get_rating_collections(match.kobo_book.collections)
+                genre_cols = updater._get_genre_collections(match.kobo_book.collections)
+
                 self.logger.info(f"  '{match.kobo_book.title}' by {match.kobo_book.author}")
                 if rating_cols:
                     self.logger.info(f"    My Ratings: {', '.join(rating_cols)}")
-                if genre_cols:
+                if genre_cols and has_genres:
                     self.logger.info(f"    My Genres: {', '.join(genre_cols)}")
-            
+
             if len(lib_matches) > 5:
                 self.logger.info(f"  ... and {len(lib_matches) - 5} more books")
         

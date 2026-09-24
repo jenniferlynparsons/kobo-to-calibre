@@ -108,5 +108,5 @@
     }
   },
   "primary_library": "MCR",
-  "kobo_database_path": "KoboReader.sqlite"
+  "kobo_database_path": "/Users/jenniferparsons/Desktop/KoboReader.sqlite"
 }
