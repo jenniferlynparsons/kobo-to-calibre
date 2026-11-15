@@ -22,8 +22,6 @@ class BookMatch:
     calibre_title: str
     calibre_authors: str
     library: CalibreLibrary
-    match_confidence: float
-    match_type: str  # 'exact', 'normalized', 'fuzzy'
 
 
 @dataclass
@@ -31,8 +29,6 @@ class BookConflict:
     """Represents a book found in multiple libraries."""
     kobo_book: KoboBook
     matches: List[BookMatch]
-    resolution: Optional[str] = None  # 'primary', 'all', 'skip', 'specific_library'
-    chosen_library: Optional[str] = None
 
 
 class BookMatcher:
@@ -83,33 +79,16 @@ class BookMatcher:
         
         return normalized
     
-    def _check_author_match(self, kobo_author_norm: str, calibre_authors_str: str) -> Optional[Dict]:
+    def _check_author_match(self, kobo_author_norm: str, calibre_authors_str: str) -> bool:
         """Check if Kobo author matches Calibre authors (handling multiple authors)."""
         if not kobo_author_norm or not calibre_authors_str:
-            return None
-        
-        calibre_author_norm = self.normalize_author(calibre_authors_str)
-        
-        # Exact match
-        if kobo_author_norm == calibre_author_norm:
-            return {'type': 'exact', 'confidence': 1.0}
-        
-        # Check if Kobo author is contained in Calibre authors
-        # Handle cases like "akamine_chan" matching "jiksa & akamine_chan"
-        calibre_authors_list = [author.strip() for author in calibre_author_norm.split('&')]
-        
-        for calibre_author in calibre_authors_list:
-            calibre_author = calibre_author.strip()
-            if kobo_author_norm == calibre_author:
-                return {'type': 'partial_author', 'confidence': 0.9}
-        
-        # Check if any Calibre author is contained in Kobo author (reverse case)
-        for calibre_author in calibre_authors_list:
-            calibre_author = calibre_author.strip()
-            if calibre_author in kobo_author_norm or kobo_author_norm in calibre_author:
-                return {'type': 'author_contains', 'confidence': 0.8}
-        
-        return None
+            return False
+        # Calibre stores a comma in an author name as '|'; restore it before normalizing so
+        # "409_conflict| ritualist" normalizes the same as Kobo's "409_conflict, ritualist"
+        calibre_authors = [self.normalize_author(a.replace('|', ','))
+                           for a in calibre_authors_str.split(' & ')]
+        # Any one author contained either way: "akamine_chan" matches "jiksa & akamine_chan"
+        return any(a in kobo_author_norm or kobo_author_norm in a for a in calibre_authors)
     
     def find_book_in_library(self, kobo_book: KoboBook, library: CalibreLibrary) -> Optional[BookMatch]:
         """Find a book in a specific Calibre library."""
@@ -145,15 +124,9 @@ class BookMatcher:
                 if kobo_title_norm != calibre_title_norm:
                     continue
                 
-                # Check author matching - handle multiple authors
-                author_match = self._check_author_match(kobo_author_norm, calibre_authors_str)
-                
-                if author_match:
-                    match_type = author_match['type']
-                    confidence = author_match['confidence']
-                    
+                if self._check_author_match(kobo_author_norm, calibre_authors_str):
                     self.logger.debug(
-                        f"✅ Found {match_type} match: '{kobo_book.title}' "
+                        f"✅ Found match: '{kobo_book.title}' "
                         f"(Kobo: '{kobo_book.author}' → Calibre: '{calibre_authors_str}')"
                     )
                     
@@ -162,9 +135,7 @@ class BookMatcher:
                         calibre_book_id=book['id'],
                         calibre_title=book['title'],
                         calibre_authors=calibre_authors_str,
-                        library=library,
-                        match_confidence=confidence,
-                        match_type=match_type
+                        library=library
                     )
             
             # If no exact match found, return None (strict matching only)
@@ -240,14 +211,6 @@ class BookMatcher:
         self.conflicts = conflicts
         return successful_matches, unmatched_books, conflicts
     
-    def get_unmatched_books(self) -> List[KoboBook]:
-        """Get list of books that couldn't be matched."""
-        return self.unmatched_books
-    
-    def get_conflicts(self) -> List[BookConflict]:
-        """Get list of books with conflicts (found in multiple libraries)."""
-        return self.conflicts
-    
     def generate_skip_report(self) -> Dict[str, str]:
         """Generate a report of unmatched books for user review and save to file."""
         # Filter to only books with collections (these are the ones that should have matched)
@@ -270,7 +233,7 @@ class BookMatcher:
         report += f"Books without collections (expected): {len(self.unmatched_books) - len(books_with_collections)}\n\n"
         
         report += f"These books have collections in Kobo but could not be matched to any Calibre library.\n"
-        report += f"This usually indicates title/author differences or missing books in Calibre.\n\n"
+        report += f"Likely causes: title or author differs (e.g. 'Last, First'), or book not in Calibre.\n\n"
         
         # Add detailed book list
         report += f"Detailed Analysis:\n"
@@ -284,10 +247,6 @@ class BookMatcher:
             report += f"     Progress: {book.percent_read}%\n"
             if book.date_last_read:
                 report += f"     Last Read: {book.date_last_read}\n"
-            report += f"     Possible reasons for no match:\n"
-            report += f"       - Title or author name differs between Kobo and Calibre\n"
-            report += f"       - Book may not exist in any Calibre library\n"
-            report += f"       - Author name format differences (e.g., 'Last, First' vs 'First Last')\n"
             report += "-" * 70 + "\n\n"
         
         # Save to file
