@@ -1,8 +1,9 @@
 from pathlib import Path
 
-from calibre.gui2 import error_dialog, info_dialog, question_dialog
 from calibre.gui2.actions import InterfaceAction
+from calibre.gui2.dialogs.message_box import MessageBox
 from calibre.utils.config import config_dir
+from qt.core import QDialog, QTimer
 
 from calibre_plugins.kobo_ratings.core import apply, preview
 
@@ -11,10 +12,18 @@ BACKUP_DIR = Path(config_dir) / "plugins" / "kobo_ratings_backups"
 
 class KoboRatingsAction(InterfaceAction):
     name = 'Kobo Ratings'
-    action_spec = ('Kobo Ratings', None, 'Copy Kobo rating shelves into #myratings', None)
+    action_spec = ('Kobo Ratings', 'rating.png', 'Copy Kobo rating shelves into #myratings', None)
 
     def genesis(self):
         self.qaction.triggered.connect(self.run)
+
+    def _dialog(self, kind, msg, details=''):
+        """Show a message box; True if accepted (Yes/OK)."""
+        d = MessageBox(kind, 'Kobo Ratings', msg, det_msg=details, show_copy_button=False,
+                       parent=self.gui, default_yes=False)
+        # Calibre's MessageBox does not grow for wrapped text, so it clips; resize once laid out
+        QTimer.singleShot(0, d.adjustSize)
+        return d.exec() == QDialog.DialogCode.Accepted
 
     def run(self):
         db = self.gui.current_db
@@ -22,13 +31,11 @@ class KoboRatingsAction(InterfaceAction):
         try:
             changes, summary, details = preview(db.new_api, db.library_path)
         except Exception as e:
-            return error_dialog(self.gui, 'Kobo Ratings', str(e), show=True)
+            return self._dialog(MessageBox.ERROR, str(e))
         if not changes:
-            return info_dialog(self.gui, 'Kobo Ratings', summary, det_msg=details, show=True)
-        if not question_dialog(self.gui, 'Kobo Ratings', f"{summary}\n\nWrite these ratings?",
-                               det_msg=details, default_yes=False):
+            return self._dialog(MessageBox.INFO, summary, details)
+        if not self._dialog(MessageBox.QUESTION, f"{summary}\n\nWrite these ratings?", details):
             return
         backup = apply(db.new_api, changes, BACKUP_DIR / Path(db.library_path).name)
         self.gui.library_view.model().refresh_ids(list(changes))
-        info_dialog(self.gui, 'Kobo Ratings', f"Wrote ratings for {len(changes)} books.\nBackup: {backup}",
-                    show=True)
+        self._dialog(MessageBox.INFO, f"Wrote ratings for {len(changes)} books.\nBackup: {backup}")
