@@ -5,11 +5,20 @@ Kobo Reader - Extract collections and reading data from KoboReader.sqlite
 import sqlite3
 import logging
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
+from collections import defaultdict
+from typing import List, Optional
 from dataclasses import dataclass
 
 # Only stat()-ed to check the Desktop copy's age; never opened
 DEVICE_DB = Path("/Volumes/KOBOeReader/.kobo/KoboReader.sqlite")
+
+# Kobo rating shelf name -> Calibre #myratings value
+RATINGS = {
+    "| evergreen": "Evergreen",
+    "| absolute favorite": "Absolute Favorite",
+    "| favorite": "Favorites",
+    "| good": "Great",
+}
 
 
 @dataclass
@@ -24,15 +33,6 @@ class KoboBook:
     collections: List[str]
 
 
-@dataclass
-class KoboCollection:
-    """Represents a collection/shelf from the Kobo database."""
-    name: str
-    internal_name: str
-    collection_type: str
-    is_rating: bool
-
-
 class KoboReader:
     """Reads and extracts data from KoboReader.sqlite database."""
     
@@ -40,14 +40,6 @@ class KoboReader:
         """Initialize with path to Kobo database."""
         self.db_path = Path(kobo_db_path)
         self.logger = logging.getLogger(__name__)
-        
-        # Rating collections mapping based on actual database content
-        self.rating_collections = {
-            "| evergreen": "Evergreen",
-            "| absolute favorite": "Absolute Favorite", 
-            "| favorite": "Favorites",
-            "| good": "Great"
-        }
     
     def connect(self) -> sqlite3.Connection:
         """Create connection to Kobo database."""
@@ -65,33 +57,6 @@ class KoboReader:
         conn = sqlite3.connect(f"{self.db_path.resolve().as_uri()}?mode=ro", uri=True)
         conn.row_factory = sqlite3.Row  # Enable dict-like access
         return conn
-    
-    def get_collections(self) -> List[KoboCollection]:
-        """Extract all active collections from Kobo database."""
-        collections = []
-        
-        with self.connect() as conn:
-            cursor = conn.execute("""
-                SELECT Name, InternalName, Type
-                FROM Shelf 
-                WHERE _IsDeleted = 'false' AND _IsVisible = 'true'
-                ORDER BY Name
-            """)
-            
-            for row in cursor:
-                name = row['Name']
-                is_rating = name in self.rating_collections
-                
-                collection = KoboCollection(
-                    name=name,
-                    internal_name=row['InternalName'],
-                    collection_type=row['Type'],
-                    is_rating=is_rating
-                )
-                collections.append(collection)
-        
-        self.logger.info(f"Found {len(collections)} collections")
-        return collections
     
     def get_books_with_collections(self) -> List[KoboBook]:
         """Extract all books with their collection memberships."""
@@ -123,22 +88,13 @@ class KoboReader:
                 ORDER BY sc.ContentId, s.Name
             """)
             
-            # Group collections by book
-            book_collections = {}
+            # Group collections by book, rating shelves renamed to their display names
+            book_collections = defaultdict(list)
             for row in cursor:
-                content_id = row['ContentId']
-                shelf_name = row['ShelfName']
-                
-                if content_id not in book_collections:
-                    book_collections[content_id] = []
-                book_collections[content_id].append(shelf_name)
+                book_collections[row['ContentId']].append(RATINGS.get(row['ShelfName'], row['ShelfName']))
             
             # Create KoboBook objects
             for content_id, book_info in book_data.items():
-                raw_collections = book_collections.get(content_id, [])
-                # Convert rating collections to display names
-                converted_collections = self._convert_collections(raw_collections)
-                
                 book = KoboBook(
                     content_id=content_id,
                     title=book_info['Title'] or "",
@@ -146,30 +102,9 @@ class KoboReader:
                     read_status=book_info['ReadStatus'] or 0,
                     percent_read=book_info['___PercentRead'] or 0,
                     date_last_read=book_info['DateLastRead'],
-                    collections=converted_collections
+                    collections=book_collections[content_id]
                 )
                 books.append(book)
         
         self.logger.info(f"Found {len(books)} books")
         return books
-    
-    def _convert_collections(self, raw_collections: List[str]) -> List[str]:
-        """Convert collections from database format to display format."""
-        converted = []
-        for collection in raw_collections:
-            # Convert rating collections to display names
-            if collection in self.rating_collections:
-                converted.append(self.rating_collections[collection])
-            else:
-                # Keep non-rating collections as-is
-                converted.append(collection)
-        return converted
-    
-    def get_rating_collections(self) -> List[str]:
-        """Get list of collections that represent ratings."""
-        return list(self.rating_collections.keys())
-    
-    def get_genre_collections(self) -> List[str]:
-        """Get list of collections that represent genres/categories."""
-        all_collections = self.get_collections()
-        return [c.name for c in all_collections if not c.is_rating]

@@ -4,21 +4,22 @@ GUI - Tkinter interface for multi-library sync operations
 
 import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
+import subprocess
 import threading
+from pathlib import Path
 import queue
 import logging
 from typing import List, Dict
 
-from config_manager import ConfigManager
 from sync_engine import SyncEngine
 
 
 class KoboSyncGUI:
     """Main GUI application for Kobo-to-Calibre sync."""
     
-    def __init__(self, config_manager: ConfigManager):
+    def __init__(self, config: Dict):
         """Initialize the GUI application."""
-        self.config_manager = config_manager
+        self.config = config
         self.sync_engine = None
         self.logger = logging.getLogger(__name__)
         
@@ -110,7 +111,7 @@ class KoboSyncGUI:
         kobo_frame.pack(fill=tk.X, padx=5, pady=5)
         
         ttk.Label(kobo_frame, text="Database Path:").pack(anchor=tk.W, padx=10, pady=5)
-        self.kobo_path_var = tk.StringVar(value=self.config_manager.get_kobo_database_path())
+        self.kobo_path_var = tk.StringVar(value=self.config["kobo_database_path"])
         kobo_path_entry = ttk.Entry(kobo_frame, textvariable=self.kobo_path_var, width=60, state='readonly')
         kobo_path_entry.pack(fill=tk.X, padx=10, pady=5)
         
@@ -122,7 +123,7 @@ class KoboSyncGUI:
         self.paths_listbox.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         
         # Load current search paths
-        for path in self.config_manager.get_search_paths():
+        for path in self.config["search_paths"]:
             self.paths_listbox.insert(tk.END, path)
     
     def _create_logs_tab(self):
@@ -137,12 +138,6 @@ class KoboSyncGUI:
         
         ttk.Button(log_buttons_frame, text="📄 Open Unmatched Report", 
                   command=self._open_unmatched_report).pack(side=tk.LEFT, padx=5)
-        
-        ttk.Button(log_buttons_frame, text="🔄 Rotate Logs", 
-                  command=self._rotate_logs).pack(side=tk.LEFT, padx=5)
-        
-        ttk.Button(log_buttons_frame, text="🗑️ Clear Old Logs", 
-                  command=self._clear_old_logs).pack(side=tk.LEFT, padx=5)
         
         # Log display
         self.log_text = scrolledtext.ScrolledText(self.logs_frame)
@@ -193,7 +188,7 @@ class KoboSyncGUI:
         
         def discovery_task():
             try:
-                self.sync_engine = SyncEngine(self.config_manager)
+                self.sync_engine = SyncEngine(self.config)
                 libraries = self.sync_engine.discover_libraries()
                 
                 # Update GUI in main thread
@@ -265,6 +260,7 @@ class KoboSyncGUI:
                 results = self.sync_engine.run_sync(dry_run=dry_run)
                 self.root.after(0, self._on_sync_complete, results)
             except Exception as e:
+                self.logger.exception("Sync process failed")
                 self.root.after(0, self._on_sync_error, str(e))
         
         threading.Thread(target=sync_task, daemon=True).start()
@@ -489,10 +485,6 @@ class KoboSyncGUI:
     
     def _open_logs_folder(self):
         """Open the logs folder in file manager."""
-        import subprocess
-        import os
-        from pathlib import Path
-        
         logs_path = Path("logs")
         if logs_path.exists():
             try:
@@ -506,109 +498,24 @@ class KoboSyncGUI:
     
     def _open_unmatched_report(self):
         """Open the most recent unmatched books report."""
-        import subprocess
-        import os
-        from pathlib import Path
-        import glob
-        
         logs_path = Path("logs")
         if not logs_path.exists():
             messagebox.showwarning("No Reports", "No logs folder found.")
             return
         
-        # Find most recent unmatched books report
-        pattern = str(logs_path / "unmatched_books_*.txt")
-        reports = glob.glob(pattern)
+        reports = list(logs_path.glob("unmatched_books_*.txt"))
         
         if not reports:
             messagebox.showinfo("No Reports", "No unmatched books reports found.")
             return
         
         # Get most recent report
-        latest_report = max(reports, key=os.path.getctime)
+        latest_report = max(reports, key=lambda r: r.stat().st_mtime)
         
         try:
             # Open with default text editor
-            subprocess.run(["open", latest_report])
+            subprocess.run(["open", str(latest_report)])
             self.logger.info(f"📄 Opened unmatched report: {latest_report}")
         except Exception as e:
             self.logger.error(f"Failed to open unmatched report: {e}")
             messagebox.showerror("Error", f"Failed to open report: {e}")
-    
-    def _rotate_logs(self):
-        """Rotate current logs (archive old ones)."""
-        try:
-            from pathlib import Path
-            import shutil
-            from datetime import datetime
-            
-            logs_path = Path("logs")
-            if not logs_path.exists():
-                messagebox.showinfo("No Logs", "No logs to rotate.")
-                return
-            
-            # Create archive name with timestamp
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            archive_name = f"kobo_sync_archived_{timestamp}.log"
-            archive_path = logs_path / archive_name
-            
-            # Archive main log file
-            main_log = logs_path / "kobo_sync.log"
-            if main_log.exists():
-                shutil.move(str(main_log), str(archive_path))
-                self.logger.info(f"📦 Archived log to: {archive_name}")
-                messagebox.showinfo("Logs Rotated", f"Archived current log to: {archive_name}")
-            else:
-                messagebox.showinfo("No Active Log", "No active log file to rotate.")
-                
-        except Exception as e:
-            self.logger.error(f"Failed to rotate logs: {e}")
-            messagebox.showerror("Error", f"Failed to rotate logs: {e}")
-    
-    def _clear_old_logs(self):
-        """Clear old log files (keep recent ones)."""
-        try:
-            from pathlib import Path
-            import glob
-            import os
-            
-            logs_path = Path("logs")
-            if not logs_path.exists():
-                messagebox.showinfo("No Logs", "No logs folder found.")
-                return
-            
-            # Get all log files
-            log_files = []
-            for pattern in ["*.log", "unmatched_books_*.txt"]:
-                log_files.extend(glob.glob(str(logs_path / pattern)))
-            
-            if len(log_files) <= 5:  # Keep at least 5 recent files
-                messagebox.showinfo("Keep Logs", f"Only {len(log_files)} log files found. Keeping all recent logs.")
-                return
-            
-            # Sort by modification time, keep newest 5
-            log_files.sort(key=os.path.getmtime, reverse=True)
-            files_to_delete = log_files[5:]  # Delete older files
-            
-            # Confirm deletion
-            response = messagebox.askyesno(
-                "Confirm Cleanup",
-                f"Delete {len(files_to_delete)} old log files?\n\n"
-                f"This will keep the 5 most recent logs."
-            )
-            
-            if response:
-                deleted_count = 0
-                for file_path in files_to_delete:
-                    try:
-                        os.remove(file_path)
-                        deleted_count += 1
-                    except Exception as e:
-                        self.logger.warning(f"Could not delete {file_path}: {e}")
-                
-                self.logger.info(f"🗑️ Deleted {deleted_count} old log files")
-                messagebox.showinfo("Cleanup Complete", f"Deleted {deleted_count} old log files.")
-                
-        except Exception as e:
-            self.logger.error(f"Failed to clear old logs: {e}")
-            messagebox.showerror("Error", f"Failed to clear logs: {e}")

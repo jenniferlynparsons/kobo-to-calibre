@@ -7,10 +7,12 @@ import sqlite3
 import logging
 import shutil
 from pathlib import Path
-from typing import List, Dict, Optional
+from collections import defaultdict
+from typing import List, Dict
 from datetime import datetime
 
 from book_matcher import BookMatch
+from kobo_reader import RATINGS
 from library_manager import CalibreLibrary
 
 
@@ -25,28 +27,12 @@ class CalibreUpdater:
         self.calibredb_path = self._find_calibredb_path()
     
     def _find_calibredb_path(self) -> str:
-        """Find calibredb executable path."""
-        # Common paths where calibredb might be found
-        possible_paths = [
-            'calibredb',  # If in PATH
-            '/Applications/calibre.app/Contents/MacOS/calibredb',  # macOS app install
-            '/usr/bin/calibredb',  # Linux system install
-            '/usr/local/bin/calibredb',  # Linux user install
-            'C:\\Program Files\\Calibre2\\calibredb.exe',  # Windows
-        ]
-        
-        for path in possible_paths:
-            try:
-                result = subprocess.run([path, '--version'], 
-                                      capture_output=True, text=True, timeout=5)
-                if result.returncode == 0:
-                    self.logger.info(f"Found calibredb at: {path}")
-                    return path
-            except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
-                continue
-        
-        self.logger.error("calibredb not found in any common locations")
-        raise RuntimeError("calibredb executable not found. Please ensure Calibre is installed.")
+        """Find calibredb on PATH or in the macOS app bundle."""
+        path = shutil.which('calibredb') or shutil.which('/Applications/calibre.app/Contents/MacOS/calibredb')
+        if not path:
+            raise RuntimeError("calibredb executable not found. Please ensure Calibre is installed.")
+        self.logger.info(f"Found calibredb at: {path}")
+        return path
     
     def _log_calibredb_error(self, operation: str, cmd: List[str], result: subprocess.CompletedProcess):
         """Log detailed error information for calibredb command failures."""
@@ -101,33 +87,16 @@ class CalibreUpdater:
             self.logger.error(f"Failed to backup {library.name}: {e}")
             return False
     
-    def check_custom_columns(self, library: CalibreLibrary) -> Dict[str, bool]:
-        """Check if required custom columns exist in library."""
+    def _column_labels(self, library: CalibreLibrary) -> set:
+        """Labels of the library's custom columns (empty on error)."""
         try:
             conn = sqlite3.connect(library.metadata_db_path)
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT label, name FROM custom_columns")
-            existing_columns = cursor.fetchall()
+            labels = {row[0] for row in conn.execute("SELECT label FROM custom_columns")}
             conn.close()
-            
-            # Create mapping of labels to display names for debugging
-            column_map = {row[0]: row[1] for row in existing_columns}
-            labels = [row[0] for row in existing_columns]
-            
-            self.logger.info(f"📋 Found custom columns in {library.name}: {column_map}")
-            
-            result = {
-                'my_ratings': 'myratings' in labels,
-                'my_genres': 'my_genres' in labels
-            }
-            
-            self.logger.info(f"✅ Column check results for {library.name}: {result}")
-            return result
-            
+            return labels
         except sqlite3.Error as e:
             self.logger.error(f"Error checking custom columns: {e}")
-            return {'my_ratings': False, 'my_genres': False}
+            return set()
     
     def create_custom_column(self, library: CalibreLibrary, column_name: str, display_name: str) -> bool:
         """Create a custom column using calibredb."""
@@ -167,11 +136,12 @@ class CalibreUpdater:
     
     def ensure_custom_columns(self, library: CalibreLibrary) -> bool:
         """Ensure required custom columns exist."""
-        columns = self.check_custom_columns(library)
+        labels = self._column_labels(library)
+        self.logger.info(f"📋 Found custom columns in {library.name}: {sorted(labels)}")
         
         success = True
         
-        if not columns['my_ratings']:
+        if 'myratings' not in labels:
             self.logger.info(f"⚠️ Creating missing 'myratings' column in {library.name}")
             if not self.create_custom_column(library, 'myratings', 'My Ratings'):
                 success = False
@@ -179,7 +149,7 @@ class CalibreUpdater:
             self.logger.info(f"✅ 'myratings' column already exists in {library.name}")
         
         # Genres are opt-in per library: never create 'my_genres', only write to it if it exists
-        if not columns['my_genres']:
+        if 'my_genres' not in labels:
             self.logger.info(f"⏭️ No 'my_genres' column in {library.name}, genres will be skipped")
         else:
             self.logger.info(f"✅ 'my_genres' column already exists in {library.name}")
@@ -204,7 +174,7 @@ class CalibreUpdater:
                     return False
             
             # Update My Genres column
-            if genre_collections and self._verify_column_exists(match.library, 'my_genres'):
+            if genre_collections and 'my_genres' in self._column_labels(match.library):
                 if not self._update_custom_column(
                     match.library, 
                     match.calibre_book_id, 
@@ -221,43 +191,12 @@ class CalibreUpdater:
             return False
     
     def _get_rating_collections(self, collections: List[str]) -> List[str]:
-        """Filter collections to get only rating collections."""
-        # Handle both prefixed and non-prefixed collection names from Kobo
-        rating_patterns = [
-            "| evergreen", "| absolute favorite", "| favorite", "| good",
-            "evergreen", "absolute favorite", "favorites", "great", "favorite"
-        ]
-        matched_collections = []
-        for col in collections:
-            col_lower = col.lower().strip()
-            if col_lower in [p.lower() for p in rating_patterns]:
-                # Clean up the collection name for Calibre
-                clean_name = col_lower.replace("| ", "").title()
-                if clean_name == "Favorite":
-                    clean_name = "Favorites"
-                elif clean_name == "Good":
-                    clean_name = "Great"
-                matched_collections.append(clean_name)
-        
-        self.logger.debug(f"Rating collections found: {matched_collections} from {collections}")
-        return matched_collections
+        """Rating collections (KoboReader already renamed them to RATINGS values)."""
+        return [c for c in collections if c in RATINGS.values()]
     
     def _get_genre_collections(self, collections: List[str]) -> List[str]:
-        """Filter collections to get only genre collections."""
-        # Get rating collections to exclude them
-        rating_collections = self._get_rating_collections(collections)
-        rating_patterns_lower = [r.lower() for r in rating_collections]
-        
-        genre_collections = []
-        for col in collections:
-            col_clean = col.replace("| ", "").strip()
-            if col_clean.lower() not in rating_patterns_lower and col_clean.lower() not in [
-                "evergreen", "absolute favorite", "favorites", "great", "favorite", "good"
-            ]:
-                genre_collections.append(col_clean)
-        
-        self.logger.debug(f"Genre collections found: {genre_collections} from {collections}")
-        return genre_collections
+        """Every non-rating collection, without a leading '| '."""
+        return [c.replace("| ", "").strip() for c in collections if c not in RATINGS.values()]
     
     def _update_custom_column(self, library: CalibreLibrary, book_id: int, column: str, values: List[str]) -> bool:
         """Update a custom column for a specific book."""
@@ -304,13 +243,9 @@ class CalibreUpdater:
             'libraries_updated': set()
         }
         
-        # Group matches by library for efficient processing
-        by_library = {}
+        by_library = defaultdict(list)
         for match in matches:
-            lib_name = match.library.name
-            if lib_name not in by_library:
-                by_library[lib_name] = []
-            by_library[lib_name].append(match)
+            by_library[match.library.name].append(match)
         
         # Process each library
         for library_name, library_matches in by_library.items():
@@ -347,78 +282,3 @@ class CalibreUpdater:
         
         self.logger.info(f"Bulk update complete: {stats['successful']} successful, {stats['failed']} failed")
         return stats
-    
-    def _verify_column_exists(self, library: CalibreLibrary, column_name: str) -> bool:
-        """Verify that a custom column actually exists in the library."""
-        try:
-            conn = sqlite3.connect(library.metadata_db_path)
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT label FROM custom_columns WHERE label = ?", (column_name,))
-            result = cursor.fetchone()
-            conn.close()
-            
-            exists = result is not None
-            self.logger.debug(f"Column {column_name} exists in {library.name}: {exists}")
-            return exists
-            
-        except sqlite3.Error as e:
-            self.logger.error(f"Error verifying column {column_name} exists: {e}")
-            return False
-    
-    def _verify_column_update(self, library: CalibreLibrary, book_id: int, column: str, expected_value: str) -> bool:
-        """Verify that a custom column update actually worked by reading it back."""
-        try:
-            conn = sqlite3.connect(library.metadata_db_path)
-            cursor = conn.cursor()
-            
-            # Find the custom column table name
-            cursor.execute("SELECT id FROM custom_columns WHERE label = ?", (column,))
-            column_result = cursor.fetchone()
-            if not column_result:
-                conn.close()
-                self.logger.debug(f"Column {column} not found in custom_columns table")
-                return False
-            
-            column_id = column_result[0]
-            table_name = f"custom_column_{column_id}"
-            
-            # Get the current value
-            cursor.execute(f"SELECT value FROM {table_name} WHERE book = ?", (book_id,))
-            value_result = cursor.fetchone()
-            conn.close()
-            
-            if value_result:
-                current_value = value_result[0] or ""
-                matches = current_value == expected_value
-                self.logger.debug(f"Book {book_id} {column}: expected '{expected_value}', got '{current_value}', matches: {matches}")
-                return matches
-            else:
-                self.logger.debug(f"No value found for book {book_id} in {column}")
-                return False
-                
-        except sqlite3.Error as e:
-            self.logger.debug(f"Error verifying column update (non-critical): {e}")
-            return False  # Non-critical, don't fail the update
-        except Exception as e:
-            self.logger.debug(f"Error verifying column update (non-critical): {e}")
-            return False
-    
-    def test_column_update(self, library: CalibreLibrary, test_book_id: int = 1) -> bool:
-        """Test updating a custom column to verify the fix works."""
-        try:
-            self.logger.info(f"🧪 Testing column update capability for {library.name}")
-            
-            # Test with a simple rating value
-            test_result = self._update_custom_column(library, test_book_id, 'myratings', ['Test'])
-            
-            if test_result:
-                self.logger.info(f"✅ Column update test PASSED for {library.name}")
-            else:
-                self.logger.error(f"❌ Column update test FAILED for {library.name}")
-            
-            return test_result
-            
-        except Exception as e:
-            self.logger.error(f"❌ Column update test ERROR for {library.name}: {e}")
-            return False

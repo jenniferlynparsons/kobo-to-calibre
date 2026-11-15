@@ -3,11 +3,11 @@ Sync Engine - Main orchestration for multi-library sync operations
 """
 
 import logging
-from typing import List, Dict, Optional
-from pathlib import Path
+from typing import List, Dict
 
-from config_manager import ConfigManager
-from kobo_reader import KoboReader, KoboBook
+from collections import defaultdict
+
+from kobo_reader import KoboReader, KoboBook, RATINGS
 from library_manager import LibraryManager, CalibreLibrary
 from book_matcher import BookMatcher, BookMatch
 from calibre_updater import CalibreUpdater
@@ -16,9 +16,9 @@ from calibre_updater import CalibreUpdater
 class SyncEngine:
     """Main orchestration engine for Kobo-to-Calibre sync."""
     
-    def __init__(self, config_manager: ConfigManager):
-        """Initialize sync engine with configuration."""
-        self.config_manager = config_manager
+    def __init__(self, config: Dict):
+        """Initialize sync engine with config/library_mappings.json contents."""
+        self.config = config
         self.logger = logging.getLogger(__name__)
         
         # Initialize components
@@ -38,29 +38,10 @@ class SyncEngine:
         """Discover Calibre libraries using configured search paths."""
         self.logger.info("Starting library discovery")
         
-        search_paths = self.config_manager.get_search_paths()
-        self.libraries = self.library_manager.discover_libraries(search_paths)
+        self.libraries = self.library_manager.discover_libraries(self.config["search_paths"])
         
         if not self.libraries:
             raise Exception("No Calibre libraries found in search paths")
-        
-        # Update configuration with discovered libraries
-        library_info = {}
-        for lib in self.libraries:
-            info = self.library_manager.get_library_info(lib)
-            library_info[lib.name] = {
-                'path': str(lib.path),
-                'is_primary': lib.is_primary,
-                'book_count': info.get('book_count', 0),
-                'custom_columns': info.get('custom_columns', {})
-            }
-        
-        self.config_manager.update_discovered_libraries(library_info)
-        
-        # Set primary library in config
-        primary_lib = self.library_manager.get_primary_library()
-        if primary_lib:
-            self.config_manager.set_primary_library(primary_lib.name)
         
         self.logger.info(f"Discovered {len(self.libraries)} libraries")
         return self.libraries
@@ -69,8 +50,7 @@ class SyncEngine:
         """Load books and collections from Kobo database."""
         self.logger.info("Loading Kobo data")
         
-        kobo_db_path = self.config_manager.get_kobo_database_path()
-        self.kobo_reader = KoboReader(kobo_db_path)
+        self.kobo_reader = KoboReader(self.config["kobo_database_path"])
         
         # Get all books with collections
         self.kobo_books = self.kobo_reader.get_books_with_collections()
@@ -87,7 +67,7 @@ class SyncEngine:
             all_collections.update(book.collections)
             rating_collections.update(
                 col for col in book.collections 
-                if col in self.kobo_reader.rating_collections
+                if col in RATINGS.values()
             )
         
         self.logger.info(f"Found {len(all_collections)} unique collections")
@@ -126,12 +106,7 @@ class SyncEngine:
     def update_calibre_metadata(self, dry_run: bool = True) -> Dict:
         """Update Calibre metadata for matched books."""
         if dry_run:
-            self.logger.info("="*60)
-            self.logger.info("RUNNING IN DRY RUN MODE")
-            self.logger.info("No files will be modified")
-            self.logger.info("No calibredb commands will be executed")
-            self.logger.info("This is a preview only")
-            self.logger.info("="*60)
+            self.logger.info("DRY RUN: preview only, no files modified, no calibredb writes")
             return self._simulate_updates()
         
         self.logger.info("Starting Calibre metadata updates")
@@ -160,20 +135,16 @@ class SyncEngine:
             'dry_run': True
         }
         
-        # Group by library to show what would be updated
-        by_library = {}
+        by_library = defaultdict(list)
         for match in self.matches:
-            lib_name = match.library.name
-            if lib_name not in by_library:
-                by_library[lib_name] = []
-            by_library[lib_name].append(match)
-            stats['libraries_updated'].add(lib_name)
+            by_library[match.library.name].append(match)
+        stats['libraries_updated'] = set(by_library)
         
         # Log what would be updated
         for lib_name, lib_matches in by_library.items():
             # Same filters and column check as the real run, so the preview matches it
             updater = self.calibre_updater
-            has_genres = updater._verify_column_exists(lib_matches[0].library, 'my_genres')
+            has_genres = 'my_genres' in updater._column_labels(lib_matches[0].library)
             rated = [m for m in lib_matches
                      if updater._get_rating_collections(m.kobo_book.collections)]
             self.logger.info(f"Would update {len(lib_matches)} books in {lib_name} "
@@ -231,41 +202,31 @@ class SyncEngine:
         """Run complete sync process."""
         self.logger.info(f"Starting full sync process (dry_run={dry_run})")
         
-        try:
-            # Step 1: Ensure libraries are discovered
-            if not self.libraries:
-                self.discover_libraries()
-            
-            # Step 2: Load Kobo data
-            self.load_kobo_data()
-            
-            # Step 3: Match books
-            self.match_books()
-            
-            # Step 4: Handle conflicts
-            if self.conflicts:
-                self.logger.info(f"Found {len(self.conflicts)} conflicts that need resolution")
-                # Conflicts will be returned in results for GUI to handle
-            
-            # Step 5: Update metadata
-            update_stats = self.update_calibre_metadata(dry_run=dry_run)
-            
-            # Step 6: Generate reports
-            reports = self.generate_reports()
-            
-            # Combine results
-            results = {
-                **update_stats,
-                'kobo_books_total': len(self.kobo_books),
-                'libraries_found': len(self.libraries),
-                'unmatched_count': len(self.unmatched_books),
-                'conflicts_count': len(self.conflicts),
-                'reports': reports
-            }
-            
-            self.logger.info("Sync process completed successfully")
-            return results
-            
-        except Exception as e:
-            self.logger.error(f"Sync process failed: {e}")
-            raise
+        # Step 1: Ensure libraries are discovered
+        if not self.libraries:
+            self.discover_libraries()
+        
+        # Step 2: Load Kobo data
+        self.load_kobo_data()
+        
+        # Step 3: Match books
+        self.match_books()
+        
+        # Step 4: Update metadata (the GUI resolves conflicts from the results)
+        update_stats = self.update_calibre_metadata(dry_run=dry_run)
+        
+        # Step 5: Generate reports
+        reports = self.generate_reports()
+        
+        # Combine results
+        results = {
+            **update_stats,
+            'kobo_books_total': len(self.kobo_books),
+            'libraries_found': len(self.libraries),
+            'unmatched_count': len(self.unmatched_books),
+            'conflicts_count': len(self.conflicts),
+            'reports': reports
+        }
+        
+        self.logger.info("Sync process completed successfully")
+        return results
