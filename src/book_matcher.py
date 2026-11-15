@@ -10,8 +10,12 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
-from kobo_reader import KoboBook
-from library_manager import CalibreLibrary
+try:
+    from kobo_reader import KoboBook
+    from library_manager import CalibreLibrary
+except ImportError:  # loaded as calibre_plugins.kobo_ratings inside the Calibre plugin
+    from .kobo_reader import KoboBook
+    from .library_manager import CalibreLibrary
 
 
 @dataclass
