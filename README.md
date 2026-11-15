@@ -16,6 +16,21 @@ Python 3 standard library only. Calibre must be installed (the tool runs `calibr
 The tool backs up each `metadata.db` to `backups/` before it writes. Logs and the unmatched-books
 report go to `logs/`.
 
+## Calibre plugin
+
+The plugin does the rating sync from inside Calibre for the open library. It reads the Kobo
+directly: it copies the device DB to a temp folder, checks the copy, and reads only the copy.
+Calibre can stay open. The plugin writes only `#myratings`; it does not write genres.
+
+1. Install: `calibre-customize -b calibre_plugin`, then restart Calibre.
+2. Add the button: **Preferences → Toolbars & menus → Main toolbar**, move **Kobo Ratings** across.
+3. Connect the Kobo, open the library, click **Kobo Ratings**. A preview shows each change;
+   click **Yes** to write. Each write first backs up `metadata.db` to
+   `~/Library/Preferences/calibre/plugins/kobo_ratings_backups/<library>/`.
+
+`kobo_reader.py`, `book_matcher.py` and `library_manager.py` in `calibre_plugin/` are symlinks to
+`src/`, so the plugin and the script use the same matching.
+
 ## Configuration
 
 `config/library_mappings.json`:
@@ -28,4 +43,6 @@ is not there, the tool searches the other libraries and asks you when a book is 
 
 ## Check
 
-`python3 test_desktop_db.py`
+- `python3 test_desktop_db.py`
+- `python3 test_author_match.py`
+- `calibre-debug -e test_plugin_core.py` (needs the Kobo connected; writes only to a temp copy)
