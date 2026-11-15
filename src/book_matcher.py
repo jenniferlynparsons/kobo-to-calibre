@@ -83,9 +83,12 @@ class BookMatcher:
         """Check if Kobo author matches Calibre authors (handling multiple authors)."""
         if not kobo_author_norm or not calibre_authors_str:
             return False
+        # Calibre stores a comma in an author name as '|'; restore it before normalizing so
+        # "409_conflict| ritualist" normalizes the same as Kobo's "409_conflict, ritualist"
+        calibre_authors = [self.normalize_author(a.replace('|', ','))
+                           for a in calibre_authors_str.split(' & ')]
         # Any one author contained either way: "akamine_chan" matches "jiksa & akamine_chan"
-        return any(a in kobo_author_norm or kobo_author_norm in a
-                   for a in (x.strip() for x in self.normalize_author(calibre_authors_str).split('&')))
+        return any(a in kobo_author_norm or kobo_author_norm in a for a in calibre_authors)
     
     def find_book_in_library(self, kobo_book: KoboBook, library: CalibreLibrary) -> Optional[BookMatch]:
         """Find a book in a specific Calibre library."""
